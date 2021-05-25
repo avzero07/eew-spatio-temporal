@@ -15,4 +15,7 @@
 - torch-geometric-temporal
   - Follow install instructions on https://pytorch-geometric-temporal.readthedocs.io/en/latest/notes/installation.html 
 
+- pytest 6.2.2 or greater
+  - Tests if any will be written in pytest
+
 TODO: Create a Poetry File to package project
