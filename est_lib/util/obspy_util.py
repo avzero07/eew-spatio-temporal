@@ -19,7 +19,8 @@ def inventory_retriever(network='CN',
 
     Return Type
     ===========
-    - inventory       : obspy.core.inventory.inventory.Inventory with details about specified stations
+    - inventory       : obspy.core.inventory.inventory.Inventory with
+                        details about specified station
     '''
     sta_list_string = stringify_list(sta_list)
     inventory = client.get_stations(network=network,
@@ -38,16 +39,21 @@ def stream_retriever(event_time=None,
     Argument Type
     =============
     - event_time      : obspy.UTCDateTime Object Denoting EQ Origin Time
-    - seconds_before  : Denotes range start, ie seconds before event_time | default = 600 seconds
-    - seconds_after   : Denotes range end  , ie seconds after event_time | default = 1500 seconds
+    - seconds_before  : Denotes range start, ie seconds before
+                        event_time | default = 600 seconds
+    - seconds_after   : Denotes range end  , ie seconds after
+                        event_time | default = 1500 seconds
     - network         : Seismic Station Network ID | default = 'CN' for CNSN
     - sta_list        : List of Station ID Strings eg: ['BFSB','QEPB','HOLB']
-    - channel_list    : List of Channel ID strings of Interest | default = ['HHE','HHN','HHZ']
-    - client_obj      : obspy.clients.fdsn.Client Object | default = obspy.clients.fdsn.Client('IRIS') 
+    - channel_list    : List of Channel ID strings of Interest
+                        | default = ['HHE','HHN','HHZ']
+    - client_obj      : obspy.clients.fdsn.Client Object
+                        | default = obspy.clients.fdsn.Client('IRIS')
 
     Return Type
     ===========
-    - stream          : obspy.core.stream.Stream Object Containing Waveforms from Specific Stations
+    - stream          : obspy.core.stream.Stream Object Containing
+                        Waveforms from Specific Stations
     '''
     sta_list_string = stringify_list(sta_list)
     channel_string = stringify_list(channel_list)
