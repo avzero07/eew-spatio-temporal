@@ -72,3 +72,8 @@ def test_dataset_stream_content(sample_inventory,sample_stream,sample_dataset):
         discrepancies.
         '''
         assert torch.all(dt.eq(tr)), "Trace Does not match slice!"
+
+        # Small Test For Label Sanity
+        ldtype = obj.labels.dtype
+        ddtype = obj.data.dtype
+        assert ldtype == ddtype, "Data and Label dtype mismatch!"
