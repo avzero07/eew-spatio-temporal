@@ -2,20 +2,43 @@
 
 ## Dependencies
 
-- obspy 1.2.2 or greater
+- obspy >=1.2.2
   - Install from the master branch of this fork : https://github.com/avzero07/obspy
   - Newer versions of obspy from source ought to be fine as well. Just make sure all tests pass.
 
-- pytorch 1.8.1 (cu102) or greater
+- pytorch >=1.8.1 (cu102)
   - Install via pip
 
-- torch-geometric 1.7.0
+- torch-geometric >=1.7.0
   - Follow install instructions on https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html
 
-- torch-geometric-temporal
+- torch-geometric-temporal >=0.34
   - Follow install instructions on https://pytorch-geometric-temporal.readthedocs.io/en/latest/notes/installation.html 
 
-- pytest 6.2.2 or greater
-  - Tests if any will be written in pytest
+- pytest >=6.2.2
+  - Tests are written in pytest
 
 TODO: Create a Poetry File to package project
+
+## Setup
+
+Once the dependencies are met, from the project root run pip install. I 
+personally like editable installs but this is a personal preference.
+
+```
+eew-spatio-temporal$ pip install -e .
+```
+
+This will install est_lib. Refer to the test files to get a feel for
+usage.
+
+## Tests
+
+At this time, tests are basic and are more to confirm that things run.
+All tests should be passing. If not, something is wrong.
+
+To run tests, after Setup, call pytest
+
+```
+eew-spatio-temporal$ pytest test/
+```

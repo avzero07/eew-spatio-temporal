@@ -13,7 +13,7 @@ class CNDataset(torch.utils.data.Dataset):
                  seq_length=100):
         self.stream = stream_reader(stream_file,file_format="PICKLE")
         self.inv = inventory_reader(inv_file)
-        self.sta_list = sta_list
+        self.sta_list = sorted(sta_list) # Important for storage
         self.chan_list = chan_list
         self.ip_dim = ip_dim
         self.num_nodes = num_nodes
@@ -50,17 +50,28 @@ class CNDataset(torch.utils.data.Dataset):
         num_inp x nodes x seq_length
         '''
         for i,station in enumerate(self.sta_list):
+            # TODO: derive sta_list or sort it
             temp_inv = self.inv.select(station=station)
             temp_stream = self.stream.select(station=station)
             # Remove Response #TODO Locate in a better place
             temp_stream.remove_response(inventory=temp_inv)
             # Create a shell for Data the First Time
             if self.data == None:
-                self.data = torch.zeros(self.ip_dim,self.num_nodes,
-                                        len(temp_stream[0]))
+                '''
+                It is necessary to explicitly set precision to
+                float64
+
+                use torch.as_tensor instead of torch.tensor
+                https://github.com/pytorch/text/issues/467
+                https://github.com/pytorch/pytorch/issues/16627
+                '''
+                self.data = torch.as_tensor(torch.zeros(self.ip_dim,self.num_nodes,
+                                        len(temp_stream[0])),
+                                        dtype=torch.float64)
             # Copy Data Over
             for j,trace in enumerate(temp_stream):
-                self.data[j,i,:] = torch.from_numpy(trace.data)
+                self.data[j,i,:] = torch.tensor(trace.data,
+                                                dtype=torch.float64)
 
     def _generate_labels(self):
         '''
