@@ -9,11 +9,39 @@ from est_lib.dataset.seismic_dataset import CNDataset
 from obspy import UTCDateTime as dt
 from obspy.core.util.testing import streams_almost_equal as streq
 
-def test_nn_init(sample_dataset):
+def test_nn_init():
     net = cp_line_simple()
 
-def test_nn_forward(sample_dataset):
-    obj = sample_dataset
-    net = cp_line_simple()
-    net(obj.data)
+@pytest.mark.parametrize(
+        "ip",
+        [((1,1)),
+         ((2,1)),
+         ((2,2)),
+         ((2,3))])
+def test_nn_init_param(ip):
+    net = cp_line_simple(num_in_nodes=ip[0],feat_size=ip[1])
+    assert len(net.lstms) == ip[0], "Wrong number of LSTMS"
+    for layer in net.op:
+        assert layer.weight.shape[1] == ip[0], "Wrong Number of op Neurons"
+        assert layer.weight.shape[0] == 1, "Wrong Number of Outputs"
 
+@pytest.mark.parametrize(
+        "ip",
+        [(([1,10,3,3])),
+         (([2,1,1,1])),
+         (([1,5,2,1])),
+         (([1,7,2,3])),
+         (([4,20,20,3])),
+         ])
+def test_nn_forward(ip):
+    dat = gen_rand_tensor(ip)
+    net = cp_line_simple(num_in_nodes=ip[2],
+                         feat_size=ip[3])
+    op = net(dat)
+    for i in range(ip[-1]):
+        print(op[i].shape)
+
+
+# Helper Random Tensor Input
+def gen_rand_tensor(dim=[1,1,1,1]):
+    return torch.rand(dim)
