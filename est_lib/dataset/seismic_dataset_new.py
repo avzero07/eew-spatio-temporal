@@ -8,10 +8,14 @@ class EQDataset(torch.utils.data.Dataset):
     Dataset of Time Series Seismic Data from CNSN Stations
     '''
     # TODO: Current implementation will assume a single event.
-    def __init__(self,inv_file,stream_file,sta_list,
+    def __init__(self,inv_file,stream_file_data,
+                 stream_file_label,sta_list,
                  chan_list=['HHE','HHN','HHZ'],ip_dim=3,num_nodes=3,
                  seq_length=100):
-        self.stream = stream_data_reader(stream_file)
+        self.stream_data = torch.Tensor(stream_data_reader(stream_file_data))
+        self.stream_data = self.stream_data.to(get_device())
+        self.stream_label = torch.Tensor(stream_data_reader(stream_file_label))
+        self.stream_label = self.stream_label.to(get_device())
         self.inv = inventory_reader(inv_file)
         self.sta_list = sorted(sta_list) # Important for storage
         self.chan_list = sorted(chan_list)
@@ -23,7 +27,8 @@ class EQDataset(torch.utils.data.Dataset):
         '''
         Returns length along sequence axis
         '''
-        trace_len = self.stream.shape[0]
+        assert self.stream_data.shape[0] == self.stream_label.shape[0]
+        trace_len = self.stream_data.shape[0]
         trace_len_usable = trace_len - self.seq_length
         return trace_len_usable
 
@@ -35,11 +40,19 @@ class EQDataset(torch.utils.data.Dataset):
             idx = len(self) + idx
         if idx >= len(self):
             raise DatasetError("Trying to read beyond Index!")
-        data = torch.Tensor(self.stream[idx:idx+self.seq_length-1,:,:])
-        label = torch.Tensor(self.stream[idx+self.seq_length,:,:])
+        data = self.stream_data[idx:idx+self.seq_length-1,:,:]
+        label = self.stream_label[idx+self.seq_length,:,:]
         return (data,label)
 
 class DatasetError(Exception):
     def __init__(self,message="Problem loading data!"):
         self.message = message
         super().__init__(self.message)
+
+# Helper Functions
+def get_device():
+    if torch.cuda.is_available():
+        device = "cuda:0"
+    else:
+        device = "cpu"
+    return device

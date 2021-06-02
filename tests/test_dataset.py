@@ -82,6 +82,7 @@ def test_dataset_stream_content(sample_inventory,sample_stream,sample_dataset):
 def test_eq_datatset_init(sample_inventory_file,sample_eq_stream_file):
     obj = EQDataset(sample_inventory_file,
                     sample_eq_stream_file,
+                    sample_eq_stream_file,
                     sta_list=['HOPB','QEPB'],
                     ip_dim=3,
                     num_nodes=2,

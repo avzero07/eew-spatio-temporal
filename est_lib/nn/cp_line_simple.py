@@ -18,7 +18,7 @@ class cp_line_simple(nn.Module):
         # Layer Definitions
         
         # One LSTM per Input Node
-        self.lstms = list()
+        self.lstms = nn.ModuleList()
         for n in range(num_in_nodes):
             lstm = nn.LSTM(input_size=feat_size,
                            hidden_size=feat_size,
@@ -32,7 +32,7 @@ class cp_line_simple(nn.Module):
 
         # Linear Layer[s] for OP
         # 1 layer per feature basically
-        self.op = list()
+        self.op = nn.ModuleList()
         for l in range(feat_size):
             self.op.append(nn.Linear(in_features=num_in_nodes,
                                 out_features=1))
