@@ -11,7 +11,7 @@ class EQDataset(torch.utils.data.Dataset):
     def __init__(self,inv_file,stream_file_data,
                  stream_file_label,sta_list,
                  chan_list=['HHE','HHN','HHZ'],ip_dim=3,num_nodes=3,
-                 seq_length=100):
+                 seq_length=100,horizon=0):
         self.stream_data = torch.Tensor(stream_data_reader(stream_file_data))
         self.stream_data = self.stream_data.to(get_device())
         self.stream_label = torch.Tensor(stream_data_reader(stream_file_label))
@@ -22,6 +22,7 @@ class EQDataset(torch.utils.data.Dataset):
         self.ip_dim = ip_dim
         self.num_nodes = num_nodes
         self.seq_length = seq_length
+        self.horizon = horizon
 
     def __len__(self):
         '''
@@ -29,7 +30,7 @@ class EQDataset(torch.utils.data.Dataset):
         '''
         assert self.stream_data.shape[0] == self.stream_label.shape[0]
         trace_len = self.stream_data.shape[0]
-        trace_len_usable = trace_len - self.seq_length
+        trace_len_usable = trace_len - self.seq_length - self.horizon
         return trace_len_usable
 
     def __getitem__(self,idx):
@@ -41,7 +42,7 @@ class EQDataset(torch.utils.data.Dataset):
         if idx >= len(self):
             raise DatasetError("Trying to read beyond Index!")
         data = self.stream_data[idx:idx+self.seq_length-1,:,:]
-        label = self.stream_label[idx+self.seq_length,:,:]
+        label = self.stream_label[idx+self.seq_length+self.horizon,:,:]
         return (data,label)
 
 class DatasetError(Exception):

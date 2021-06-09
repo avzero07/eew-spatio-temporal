@@ -101,3 +101,18 @@ def test_eq_dataset_get_item(sample_inventory,sample_stream,sample_eq_dataset):
     b = obj[len(obj)-1]
     assert torch.all(a[0].eq(b[0])), "Data Component Not Equal!"
     assert torch.all(a[1].eq(b[1])), "Label Component Not Equal!"
+
+def test_eq_dataset_get_item_horizon(sample_eq_stream_file,sample_stream,sample_inventory_file):
+    obj = EQDataset(sample_inventory_file,
+                    sample_eq_stream_file,
+                    sample_eq_stream_file,
+                    sta_list=['HOPB','QEPB'],
+                    ip_dim=3,
+                    num_nodes=2,
+                    seq_length=100,
+                    horizon=10000)
+    a = obj[2]
+    label = obj.stream_label[2+obj.seq_length+obj.horizon]
+    assert torch.all(a[1].eq(label)), "Label Component Not Equal"
+    
+
