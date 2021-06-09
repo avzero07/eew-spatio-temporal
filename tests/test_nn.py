@@ -22,8 +22,15 @@ def test_nn_init_param(ip):
     net = cp_line_simple(num_in_nodes=ip[0],feat_size=ip[1])
     assert len(net.lstms) == ip[0], "Wrong number of LSTMS"
     for layer in net.op:
-        assert layer.weight.shape[1] == ip[0], "Wrong Number of op Neurons"
+        if len(ip) == 3:
+            assert layer.weight.shape[1] == ip[2], "Wrong Number of Hidden Neurons" 
+        else:
+            assert layer.weight.shape[1] == 3, "Wrong Number of Hidden  Neurons"
         assert layer.weight.shape[0] == 1, "Wrong Number of Outputs"
+
+    for layer in net.hidden:
+        assert layer.weight.shape[0] == net.hidden_size, "Mismatch - hidden layer"
+        assert layer.weight.shape[1] == ip[0], "Mismatch - dense input"
 
 @pytest.mark.parametrize(
         "ip",

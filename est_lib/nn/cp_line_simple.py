@@ -8,12 +8,12 @@ import torch.nn.functional as F
 
 class cp_line_simple(nn.Module):
     def __init__(self,num_in_nodes=2,
-                 feat_size=1):
+                 feat_size=1,hidden=3):
         # feat_size for ip and op
         super(cp_line_simple, self).__init__()
         self.num_in_nodes = num_in_nodes
         self.feat_size = feat_size
-
+        self.hidden_size = hidden
 
         # Layer Definitions
         
@@ -31,10 +31,14 @@ class cp_line_simple(nn.Module):
             self.lstms.append(lstm)
 
         # Linear Layer[s] for OP
-        # 1 layer per feature basically
+        # Per feature basically
+        self.hidden = nn.ModuleList()
+        for l in range(feat_size):
+            self.hidden.append(nn.Linear(in_features=num_in_nodes,
+                                out_features=hidden))
         self.op = nn.ModuleList()
         for l in range(feat_size):
-            self.op.append(nn.Linear(in_features=num_in_nodes,
+            self.op.append(nn.Linear(in_features=hidden,
                                 out_features=1))
         # Potentially, any softmax type of thing goes here
 
@@ -55,7 +59,9 @@ class cp_line_simple(nn.Module):
             for n in range(self.num_in_nodes):
                 tens_temp.append(x_list[n][:,l])
             x_temp = torch.stack(tens_temp,-1)
-            result.append(self.op[l](x_temp))
+            # Op at Hidden
+            inter = torch.tanh(self.hidden[l](x_temp))
+            result.append(self.op[l](inter))
         '''
         There will need to be as many losses as output length
         in result. (up to 3)
