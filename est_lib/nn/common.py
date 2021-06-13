@@ -16,8 +16,9 @@ def russell_error(sigA,sigB):
     '''
     # Batch Length should be the same (corresponds to sequence length)
     assert sigA.shape[0] == sigB.shape[0], "Batch Length Mismatch!"
+    assert sigA.device == sigB.device, "Not On Same Device!"
 
-    pi = torch.arccos(torch.zeros(1))*2
+    pi = (torch.arccos(torch.zeros(1))*2).to(sigA.device)
 
     # Mag Measure
 
