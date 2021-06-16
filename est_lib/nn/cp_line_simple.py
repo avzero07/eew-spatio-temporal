@@ -48,8 +48,11 @@ class cp_line_simple(nn.Module):
         for i,layer in enumerate(self.lstms):
             # Slice Here
             temp = x[:,:,i,:]
-            temp,_ = self.lstms[i](temp)
-            x_list.append(temp[:,-1,:]) # Use last output only
+            temp,(hn_temp,cn_temp) = self.lstms[i](temp)
+            # hn_temp = temp[:,-1,:]
+            hn_temp = torch.squeeze(hn_temp,dim=0)
+            assert hn_temp.shape == temp[:,-1,:].shape
+            x_list.append(hn_temp) # Use last output only
 
         # init op_list
         result = list()
