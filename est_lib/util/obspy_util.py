@@ -139,6 +139,32 @@ def stream_data_writer(stream_obj,inv_obj,filepath,sta_list,
         for j,chan in enumerate(chan_list):
             temp = stream_obj.select(station=sta,
                                      channel=chan)
+            '''
+            This try block is an unfortunate consquence
+            of how IRIS data is. I noticed that some
+            events had emtpy trace objects within a stream
+            list.
+
+            Example,
+
+            1 Trace(s) in Stream:
+            CN.CBB..HNZ | 2018-10-22T06:12:45.000000Z -
+                    2018-10-22T06:42:45.000000Z | 100.0 Hz, 180001 samples
+            0 Trace(s) in Stream:
+
+            0 Trace(s) in Stream:
+
+            0 Trace(s) in Stream:
+
+            1 Trace(s) in Stream:
+            CN.HOLB..HNE | 2018-10-22T06:12:45.000000Z -
+                    2018-10-22T06:42:45.000000Z | 100.0 Hz, 180001 samples
+            1 Trace(s) in Stream:
+            CN.HOLB..HNN | 2018-10-22T06:12:45.000000Z -
+                    2018-10-22T06:42:45.000000Z | 100.0 Hz, 180001 samples
+
+
+            '''
             filler[:,i,j] = temp[0].data
 
     with open(filepath,'wb') as f:
