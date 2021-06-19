@@ -1,7 +1,9 @@
 import pytest
 import os
+import numpy as np
 
 from est_lib.util.event_parse import *
+from est_lib.util.obspy_util import inventory_retriever
 from obspy import UTCDateTime as dt
 
 # Tests
@@ -30,7 +32,17 @@ def sample_event_list(temp_dir):
     f_path = os.path.join(temp_dir,"ev_list.txt")
     with open(f_path,'w') as f:
         f.write(text)
-    return f_path
+    yield f_path
+
+@pytest.fixture(scope="module",autouse=True)
+def sample_event(temp_dir):
+    text =("#EventID|Time|Latitude|Longitude|Depth/km|MagType|Magnitude|EventLocationName\n"
+    "20191225.0336007|2019-12-25T03:36:01.578000Z|50.6081|-129.9656|19.39|mww|6.3|dummy"
+    " dummy\n")
+    f_path = os.path.join(temp_dir,"ev.txt")
+    with open(f_path,'w') as f:
+        f.write(text)
+    yield f_path
 
 def test_init(sample_event_list):
     obj = Eq_Events(sample_event_list)
@@ -49,7 +61,7 @@ def test_len(sample_event_list):
 def test_get_attr(ip,op,sample_event_list):
     obj = Eq_Events(sample_event_list)
     assert op == getattr(obj[ip[0]],ip[1]), "Expected a match!"
-    
+
 def test_get_item(sample_event_list):
     obj = Eq_Events(sample_event_list)
     print(obj[0])
@@ -61,3 +73,60 @@ def test_iter(sample_event_list):
     assert i == 8, "Incorrect Final Index, Expected i == 8!"
 
     assert item == obj[i], "Should be the same!"
+
+@pytest.fixture(scope="module")
+def sample_eq_events(sample_event_list):
+    yield Eq_Events(sample_event_list)
+
+@pytest.fixture(scope="module")
+def sample_sta_cha_lists():
+    sta_list = ['PACB','WOSB','HOPB']
+    cha_list = ['HHE','HHN','HHZ','HNE','HNN','HNZ']
+    yield (sta_list,cha_list)
+
+def test_event_membership_init(sample_eq_events,sample_sta_cha_lists):
+    eq_ev_obj = sample_eq_events
+    sta_list = sample_sta_cha_lists[0]
+    cha_list = sample_sta_cha_lists[1]
+    memb_obj = Event_Membership(eq_ev_obj,sta_list,cha_list)
+    assert memb_obj.num_rows == 9, "Expected 9 events!"
+    assert memb_obj.sta_list[0] == 'HOPB', "Should be Sorted!"
+    assert memb_obj.sta_list[2] == 'WOSB', "Should be Sorted!"
+    assert memb_obj.cha_list[0] == 'HHE', "Should be Sorted!"
+    assert memb_obj.cha_list[4] == 'HNN', "Should be Sorted!"
+    assert memb_obj.num_cols == 3, "Expected 3 columns!"
+    assert memb_obj.num_cha == 6, "Expected 6 channels!"
+    assert np.sum(memb_obj.table) == 0, "Expected Empty Table!"
+
+def test_event_membership_init_inventory(sample_event,
+        sample_inventory):
+    eq_ev_obj = Eq_Events(sample_event)
+    sta_list = ['PACB','HOPB']
+    cha_list = ['HHE','HHN','HHZ','HNE','HNN','HNZ']
+    memb_obj = Event_Membership(eq_ev_obj,sta_list,cha_list,
+            inventory=sample_inventory)
+    assert memb_obj.num_rows == 1, "Expected 1 event!"
+    assert memb_obj.sta_list[0] == 'HOPB', "Should be Sorted!"
+    assert memb_obj.sta_list[1] == 'PACB', "Should be Sorted!"
+    assert memb_obj.cha_list[0] == 'HHE', "Should be Sorted!"
+    assert memb_obj.cha_list[4] == 'HNN', "Should be Sorted!"
+    assert memb_obj.num_cols == 2, "Expected 3 columns!"
+    assert memb_obj.num_cha == 6, "Expected 6 channels!"
+    assert np.sum(memb_obj.table) != 0, "Expected Filled Table!"
+
+def test_event_membership_big(sample_eq_events,sample_sta_cha_lists):
+    eq_ev_obj = sample_eq_events
+    sta_list = ['HOPB','WOSB','MYRA']
+    cha_list = sample_sta_cha_lists[1]
+    inv = inventory_retriever(sta_list=sta_list)
+    memb_obj = Event_Membership(eq_ev_obj,sta_list,cha_list,
+            inventory=inv)
+    assert memb_obj.num_rows == 9, "Expected 9 events!"
+    assert memb_obj.sta_list[0] == 'HOPB', "Should be Sorted!"
+    assert memb_obj.sta_list[2] == 'WOSB', "Should be Sorted!"
+    assert memb_obj.cha_list[0] == 'HHE', "Should be Sorted!"
+    assert memb_obj.cha_list[4] == 'HNN', "Should be Sorted!"
+    assert memb_obj.num_cols == 3, "Expected 3 columns!"
+    assert memb_obj.num_cha == 6, "Expected 6 channels!"
+    assert np.sum(memb_obj.table) == 135, ("54 + 54 + 27 (Myra no"
+                        "Acceleration data)")

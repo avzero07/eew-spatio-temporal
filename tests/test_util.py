@@ -72,3 +72,15 @@ def test_stream_data_reader(temp_dir,sample_stream,sample_inventory):
         for ch in range(3):
             assert np.all(np.equal(op[:,st,ch],stream[c].data)), "Mismatch"
             c+=1
+
+@pytest.mark.parametrize(
+        "ip,op",
+        ([(('2019-12-25T03:36:01.578000Z','QEPB','HHZ'),(0)),
+          (('2019-12-25T03:36:01.578000Z','HOPB','HHE'),(1)),
+          (('2019-12-25T03:36:01.578000Z','HOPB','HHZ'),(1)),
+          (('2019-12-25T03:36:01.578000Z','HOPB','HNZ'),(1)),
+          (('2019-12-25T03:36:01.578000Z','QEPB','HNE'),(0)),
+          ]))
+def test_was_station_active(ip,op,sample_inventory):
+    res = was_station_active(sample_inventory,ip[0],ip[1],ip[2])
+    assert res == op, "Unexpected Answer!"

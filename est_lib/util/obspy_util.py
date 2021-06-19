@@ -224,6 +224,21 @@ def stream_reader(file_path,file_format="MSEED"):
     stream_obj = obspy.read(f_path,format=file_format)
     return stream_obj
 
+def was_station_active(inventory,time,sta_name,cha_name):
+    '''
+    Function to check whether a specific station was active and
+    recording waveforms in the specified channel around some time t1.
+    '''
+    t1 = obspy.UTCDateTime(time) - (20*60)
+    t2 = t1 + (40*60)
+    inv_slice = (inventory.select(station=sta_name)).select(starttime=t1,
+            endtime=t2)
+    if len(inv_slice) == 0:
+        return 0 # No network object
+    else:
+        length = len(inv_slice[0][0].select(channel=cha_name))
+        return length
+
 # Helper Methods
 
 def stringify_list(ip_list,separator=','):
