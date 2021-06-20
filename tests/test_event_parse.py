@@ -130,3 +130,26 @@ def test_event_membership_big(sample_eq_events,sample_sta_cha_lists):
     assert memb_obj.num_cha == 6, "Expected 6 channels!"
     assert np.sum(memb_obj.table) == 135, ("54 + 54 + 27 (Myra no"
                         "Acceleration data)")
+
+@pytest.mark.parametrize("ip,op",
+        [((['MYRA','HOPB'],['HHE','HNE']),(27,0)),
+         ((['MYRA','HOPB'],['HHE']),(18,9)),
+         ((['PACB','HOPB'],['HHE','HHN','HHZ','HNE','HNN','HNZ']),(108,9)),
+            ])
+def test_event_membership_overlapping_events(ip,op,sample_eq_events):
+    eq_ev_obj = sample_eq_events
+    sta_list = ip[0]
+    cha_list = ip[1]
+    inv = inventory_retriever(sta_list=sta_list)
+    memb_obj = Event_Membership(eq_ev_obj,sta_list,cha_list,
+            inventory=inv)
+    assert memb_obj.num_rows == 9, "Expected 9 events!"
+    assert memb_obj.sta_list[0] == 'HOPB', "Should be Sorted!"
+    assert memb_obj.cha_list[0] == 'HHE', "Should be Sorted!"
+    assert memb_obj.num_cols == len(sta_list), "Wrong number of columns!"
+    assert memb_obj.num_cha == len(cha_list), "Wrong number of channels!"
+    assert np.sum(memb_obj.table) == op[0], ("Expected {}".format(op[0]))
+
+    res = memb_obj.find_overlapping_events(cha_list)
+    assert len(res) == op[1], ("Expected Overlapping Events for"
+            "Stations to be {}".format(op[1]))

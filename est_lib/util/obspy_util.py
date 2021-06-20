@@ -30,7 +30,7 @@ def inventory_retriever(network='CN',
                                     level=level)
     return inventory
 
-def stream_retriever(event_time=None,
+def stream_retriever(event_time=None,time_format='obspy',
                      seconds_before=600,
                      seconds_after=1500,
                      network='CN',
@@ -60,6 +60,9 @@ def stream_retriever(event_time=None,
     sta_list_string = stringify_list(sta_list)
     channel_string = stringify_list(channel_list)
 
+    # TODO: Update to use a time string only
+    if(time_format == 'string'):
+        event_time = obspy.UTCDateTime(event_time)
     t1 = event_time - seconds_before
     t2 = t1 + seconds_after
     if client_obj!=None:
@@ -229,8 +232,8 @@ def was_station_active(inventory,time,sta_name,cha_name):
     Function to check whether a specific station was active and
     recording waveforms in the specified channel around some time t1.
     '''
-    t1 = obspy.UTCDateTime(time) - (20*60)
-    t2 = t1 + (40*60)
+    t1 = obspy.UTCDateTime(time) - (10*60)
+    t2 = t1 + (25*60)
     inv_slice = (inventory.select(station=sta_name)).select(starttime=t1,
             endtime=t2)
     if len(inv_slice) == 0:

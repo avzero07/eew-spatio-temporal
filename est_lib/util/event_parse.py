@@ -79,3 +79,21 @@ class Event_Membership:
         sta_idx = self.sta_list.index(sta)
         cha_idx = self.cha_list.index(cha)
         self.table[event.Index,sta_idx,cha_idx] = new_val
+
+    def find_overlapping_events(self,cha_list):
+        '''
+        Returns an event list which is a subset of self.eq_events.data
+        which represent events for which we have data from all
+        stations.
+        '''
+        res = list()
+        cha_list.sort() #TODO: Validate input vs self.cha_list
+        for index,ev in enumerate(tqdm(self.eq_events)):
+            count = 0
+            for s,sta in enumerate(self.sta_list):
+                for c,cha in enumerate(cha_list):
+                    if(self.table[index,s,c] == 1):
+                        count+=1
+            if(count == (self.num_cols*len(cha_list))):
+                res.append(ev)
+        return res
