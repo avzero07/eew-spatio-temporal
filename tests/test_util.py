@@ -51,3 +51,24 @@ def test_stream_reader(temp_dir,sample_stream):
     stream = stream_reader(f_path,
                            file_format="PICKLE")
     assert streq(stream,sample_stream), "Mismatch!"
+
+def test_stream_data_writer(temp_dir,sample_stream,sample_inventory):
+    f_path = os.path.join(temp_dir,'sample.npy')
+    stream = sample_stream
+    inv = sample_inventory
+
+    op = stream_data_writer(stream,inv,f_path,['QEPB','HOPB'],
+                       ['HHE','HHN','HHZ'])
+
+def test_stream_data_reader(temp_dir,sample_stream,sample_inventory):
+    f_path = os.path.join(temp_dir,'sample.npy')
+    stream = sample_stream
+    inv = sample_inventory
+
+    op = stream_data_reader(f_path)
+
+    c = 0
+    for st in range(2):
+        for ch in range(3):
+            assert np.all(np.equal(op[:,st,ch],stream[c].data)), "Mismatch"
+            c+=1

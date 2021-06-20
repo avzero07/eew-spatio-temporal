@@ -3,6 +3,7 @@ import tempfile
 
 from est_lib.util.obspy_util import *
 from est_lib.dataset.seismic_dataset import CNDataset
+from est_lib.dataset.seismic_dataset_new import EQDataset
 from obspy import UTCDateTime as dt
 
 # Fixtures
@@ -53,6 +54,18 @@ def sample_stream_file(temp_dir,sample_stream):
     yield op_file_path
 
 @pytest.fixture(scope="module")
+def sample_eq_stream_file(sample_stream,sample_inventory,temp_dir):
+    sta_list = ['QEPB','HOPB']
+    chan_list = ['HHE','HHN','HHZ']
+    f_path = os.path.join(temp_dir,"stream.npy")
+    op_file_path = stream_data_writer(sample_stream,
+                                      sample_inventory,
+                                      f_path,
+                                      sta_list,
+                                      chan_list)
+    yield op_file_path
+
+@pytest.fixture(scope="module")
 def sample_dataset(sample_inventory_file,sample_stream_file):
     obj = CNDataset(sample_inventory_file,
                     sample_stream_file,
@@ -62,3 +75,13 @@ def sample_dataset(sample_inventory_file,sample_stream_file):
                     seq_length=100)
     yield obj
 
+@pytest.fixture(scope="module")
+def sample_eq_dataset(sample_inventory_file,sample_eq_stream_file):
+    obj = EQDataset(sample_inventory_file,
+                    sample_eq_stream_file,
+                    sample_eq_stream_file,
+                    sta_list=['HOPB','QEPB'],
+                    ip_dim=3,
+                    num_nodes=2,
+                    seq_length=500)
+    yield obj

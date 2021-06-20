@@ -5,6 +5,7 @@ import numpy as np
 
 from est_lib.util.obspy_util import *
 from est_lib.dataset.seismic_dataset import CNDataset
+from est_lib.dataset.seismic_dataset_new import EQDataset
 from obspy import UTCDateTime as dt
 from obspy.core.util.testing import streams_almost_equal as streq
 
@@ -77,3 +78,41 @@ def test_dataset_stream_content(sample_inventory,sample_stream,sample_dataset):
         ldtype = obj.labels.dtype
         ddtype = obj.data.dtype
         assert ldtype == ddtype, "Data and Label dtype mismatch!"
+
+def test_eq_datatset_init(sample_inventory_file,sample_eq_stream_file):
+    obj = EQDataset(sample_inventory_file,
+                    sample_eq_stream_file,
+                    sample_eq_stream_file,
+                    sta_list=['HOPB','QEPB'],
+                    ip_dim=3,
+                    num_nodes=2,
+                    seq_length=100)
+
+def test_eq_dataset_len(sample_stream,sample_eq_dataset):
+    obj = sample_eq_dataset
+    assert len(obj) == len(sample_stream[0])-obj.seq_length,"Usable\
+                            Length Mismatch!"
+
+def test_eq_dataset_get_item(sample_inventory,sample_stream,sample_eq_dataset):
+    obj = sample_eq_dataset
+    assert obj[0] != None, "Error Did not expect empty result!"
+
+    a = obj[-1]
+    b = obj[len(obj)-1]
+    assert torch.all(a[0].eq(b[0])), "Data Component Not Equal!"
+    assert torch.all(a[1].eq(b[1])), "Label Component Not Equal!"
+
+def test_eq_dataset_get_item_horizon(sample_eq_stream_file,sample_stream,sample_inventory_file):
+    obj = EQDataset(sample_inventory_file,
+                    sample_eq_stream_file,
+                    sample_eq_stream_file,
+                    sta_list=['HOPB','QEPB'],
+                    ip_dim=3,
+                    num_nodes=2,
+                    seq_length=100,
+                    horizon=10000)
+    a = obj[2]
+    label = obj.stream_label[2+obj.seq_length+obj.horizon]
+    assert torch.all(a[1].eq(label)), "Label Component Not Equal"
+    
+
