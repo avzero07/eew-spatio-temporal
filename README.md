@@ -9,14 +9,8 @@
 - pytorch >=1.8.1 (cu102)
   - Install via pip
 
-- torch-geometric >=1.7.0
-  - Follow install instructions on https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html
-
-- torch-geometric-temporal >=0.34
-  - Follow install instructions on https://pytorch-geometric-temporal.readthedocs.io/en/latest/notes/installation.html 
-
 - pytest >=6.2.2
-  - Tests are written in pytest
+  - Tests are in pytest
 
 TODO: Create a Poetry File to package project
 

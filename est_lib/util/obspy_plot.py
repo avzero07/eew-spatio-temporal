@@ -7,7 +7,8 @@ from matplotlib.transforms import blended_transform_factory
 from matplotlib import cm
 plt.style.use(['seaborn-poster'])
 
-def ray_plot(ev_lat=None,ev_lon=None,min_lat=None,max_lat=None,min_lon=None,max_lon=None,inventory=None,streams=None):
+def ray_plot(ev_lat=None,ev_lon=None,min_lat=47.8,max_lat=52,
+        min_lon=-130.5,max_lon=-121,inventory=None,streams=None):
     fig = plt.figure()
     # Define the Cartopy Projection
     maxlat = max_lat
@@ -185,4 +186,21 @@ def adj_plot(min_lat=None,max_lat=None,min_lon=None,max_lon=None,inventory=None,
                               overhang = -10,
                               transform = ccrs.Geodetic())
                     a.set_closed(False)
+    plt.show()
+
+def gen_offset_plot(streams=None,channels=None,time=None):
+    fig = plt.figure(figsize=(10,10))
+    streams.select(channel=channels).plot(type='section',
+            plot_dx=75e3, recordlength=25*60,
+            time_down=True, linewidth=1, grid_linewidth=.25, show=False, fig=fig,reftime=time)
+
+    # Plot customization: Add station labels to offset axis
+    ax = fig.axes[0]
+    transform = blended_transform_factory(ax.transData, ax.transAxes)
+    for tr in streams:
+        ax.text(tr.stats.distance / 1e3, 1.0, tr.stats.station, rotation=270,
+                va="bottom", ha="center", transform=transform, zorder=10)
+    plt.rcParams['axes.titley'] = 1.0    # y is in axes-relative coordinates.
+    plt.rcParams['axes.titlepad'] = 35  # pad is in points...
+    plt.title("Offset Plot for Channel {}".format(channels))
     plt.show()
