@@ -16,7 +16,7 @@ class cp_line_simple(nn.Module):
         self.hidden_size = hidden
 
         # Layer Definitions
-        
+
         # One LSTM per Input Node
         self.lstms = nn.ModuleList()
         for n in range(num_in_nodes):
@@ -51,7 +51,7 @@ class cp_line_simple(nn.Module):
             temp,(hn_temp,cn_temp) = self.lstms[i](temp)
             # hn_temp = temp[:,-1,:]
             hn_temp = torch.squeeze(hn_temp,dim=0)
-            assert hn_temp.shape == temp[:,-1,:].shape
+            # assert hn_temp.shape == temp[:,-1,:].shape
             x_list.append(hn_temp) # Use last output only
 
         # init op_list
@@ -71,7 +71,7 @@ class cp_line_simple(nn.Module):
 
         These losses will have to be combined before calling
         backward().
-        
+
         Eg:
             loss1 = criterion(outEW,realEW)
             loss2 = criterion(outNS,realNS)
