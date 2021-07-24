@@ -169,6 +169,7 @@ def adj_plot(min_lat=None,max_lat=None,min_lon=None,max_lon=None,inventory=None,
             an_x, an_y = proj.transform_point(station.longitude, station.latitude, proj.as_geodetic())
             map_ax.annotate(str(station.code),(an_x,an_y),textcoords="offset points",xytext=(0,10),ha='center')
 
+    '''
     for i in range(len(sta_cord)):
         # Akin to looping through adj_mat
         for j in range(len(sta_cord)):
@@ -186,6 +187,7 @@ def adj_plot(min_lat=None,max_lat=None,min_lon=None,max_lon=None,inventory=None,
                               overhang = -10,
                               transform = ccrs.Geodetic())
                     a.set_closed(False)
+    '''
     plt.show()
 
 def gen_offset_plot(streams=None,channels=None,time=None):
