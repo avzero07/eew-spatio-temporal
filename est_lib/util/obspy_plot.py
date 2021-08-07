@@ -169,6 +169,7 @@ def adj_plot(min_lat=None,max_lat=None,min_lon=None,max_lon=None,inventory=None,
             an_x, an_y = proj.transform_point(station.longitude, station.latitude, proj.as_geodetic())
             map_ax.annotate(str(station.code),(an_x,an_y),textcoords="offset points",xytext=(0,10),ha='center')
 
+    '''
     for i in range(len(sta_cord)):
         # Akin to looping through adj_mat
         for j in range(len(sta_cord)):
@@ -186,13 +187,28 @@ def adj_plot(min_lat=None,max_lat=None,min_lon=None,max_lon=None,inventory=None,
                               overhang = -10,
                               transform = ccrs.Geodetic())
                     a.set_closed(False)
+    '''
     plt.show()
 
-def gen_offset_plot(streams=None,channels=None,time=None):
+def gen_offset_plot(inventory=None,streams=None,channels=None,time=None,ev_lat=None,ev_lon=None):
+    for station in inventory[0]:
+        if len(streams.select(station=station.code))!=0:
+            st_len = len(streams.select(station=station.code))
+            streams.select(station=station.code)[0].stats.distance=gps2dist_azimuth(station.latitude,
+                    station.longitude, ev_lat, ev_lon, a=6378137.0, f=0.0033528106647474805)[0]
+            if st_len > 1:
+                streams.select(station=station.code)[1].stats.distance=gps2dist_azimuth(station.latitude,
+                        station.longitude, ev_lat, ev_lon, a=6378137.0, f=0.0033528106647474805)[0]
+            if st_len > 2:
+                streams.select(station=station.code)[2].stats.distance=gps2dist_azimuth(station.latitude,
+                        station.longitude, ev_lat, ev_lon, a=6378137.0, f=0.0033528106647474805)[0]
+    
     fig = plt.figure(figsize=(10,10))
     streams.select(channel=channels).plot(type='section',
             plot_dx=75e3, recordlength=25*60,
             time_down=True, linewidth=1, grid_linewidth=.25, show=False, fig=fig,reftime=time)
+
+    
 
     # Plot customization: Add station labels to offset axis
     ax = fig.axes[0]

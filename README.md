@@ -1,4 +1,4 @@
-# eew-spatio-temporal
+# est_lib API for Seismic Data Acquisition and Manipulation
 
 ## Dependencies
 
