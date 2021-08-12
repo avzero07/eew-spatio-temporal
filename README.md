@@ -1,20 +1,21 @@
-# est_lib API for Seismic Data Acquisition and Manipulation
-
-## Dependencies
-
-- obspy >=1.2.2
-  - Install from the master branch of this fork : https://github.com/avzero07/obspy
-  - Newer versions of obspy from source ought to be fine as well. Just make sure all tests pass.
-
-- pytorch >=1.8.1 (cu102)
-  - Install via pip
-
-- pytest >=6.2.2
-  - Tests are in pytest
-
-TODO: Create a Poetry File to package project
+# `est_lib`: An API for Seismic Data Acquisition and Interaction
 
 ## Setup
+
+### Dependencies
+
+- Python >= 3.8
+- obspy >=1.2.2
+- pytorch >=1.8.1 (cu102)
+- tensorboard >= 2.4.1 (for neural net demo)
+- pytest >=6.2.2
+- jupyter (or any other IPython notebook viewer)
+- tqdm >=4.60.0 (used in demo/workflow notebooks)
+
+Latest versions of all these dependencies should work fine. They may be installed using
+pip or whatever package management tool you might be using. If in doubt, use pip.
+
+### Installation
 
 Once the dependencies are met, from the project root run pip install. I 
 personally like editable installs but this is a personal preference.
@@ -23,16 +24,40 @@ personally like editable installs but this is a personal preference.
 eew-spatio-temporal$ pip install -e .
 ```
 
-This will install est_lib. Refer to the test files to get a feel for
-usage.
+This will install `est_lib`.
 
 ## Tests
 
-At this time, tests are basic and are more to confirm that things run.
-All tests should be passing. If not, something is wrong.
+All tests are written in Pytest. After installing dependencies, call pytest from the project
+root to run all tests. All tests should be passing and you should see an output similar to
+the snippet pasted below. In case of errors please confirm whether all dependencies are
+set up correct.
 
-To run tests, after Setup, call pytest
+If problems still persist, please open an issue on this repository so that I can advise.
 
 ```
-eew-spatio-temporal$ pytest test/
+eew-spatio-temporal$ pytest
+================================================= test session starts =================================================
+platform win32 -- Python 3.8.8, pytest-6.2.4, py-1.10.0, pluggy-0.13.1
+rootdir: C:\Users\aksha\Desktop\eew-spatio-temporal
+collected 51 items
+
+tests\test_dataset.py ........                                                                                   [ 15%]
+tests\test_event_parse.py ...............                                                                        [ 45%]
+tests\test_init.py .                                                                                             [ 47%]
+tests\test_nn.py ..........                                                                                      [ 66%]
+tests\test_nn_common.py ....                                                                                     [ 74%]
+tests\test_util.py .............                                                                                 [100%]
+
+================================================= 51 passed in 22.27s =================================================
 ```
+
+## Workflow Demos
+
+Refer to the IPython notebooks in the `workflow_demos` folder
+for a tutorial on how `est_lib` might be used.
+
+## Neural Network Demos
+
+Refer to the folder `est_lib/nn/demo` to find two notebooks
+that demo how the `cp_line_simple` neural network.
