@@ -7,8 +7,10 @@
 - Python >= 3.8
 - obspy >=1.2.2
 - pytorch >=1.8.1 (cu102)
+- tensorboard >= 2.4.1 (for neural net demo)
 - pytest >=6.2.2
 - jupyter (or any other IPython notebook viewer)
+- tqdm >=4.60.0 (used in demo/workflow notebooks)
 
 Latest versions of all these dependencies should work fine. They may be installed using
 pip or whatever package management tool you might be using. If in doubt, use pip.
@@ -22,8 +24,7 @@ personally like editable installs but this is a personal preference.
 eew-spatio-temporal$ pip install -e .
 ```
 
-This will install `est_lib`. Refer to the IPython notebooks in the `workflow_demos` folder
-for a tutorial on how `est_lib` might be used.
+This will install `est_lib`.
 
 ## Tests
 
@@ -51,4 +52,12 @@ tests\test_util.py .............                                                
 ================================================= 51 passed in 22.27s =================================================
 ```
 
+## Workflow Demos
 
+Refer to the IPython notebooks in the `workflow_demos` folder
+for a tutorial on how `est_lib` might be used.
+
+## Neural Network Demos
+
+Refer to the folder `est_lib/nn/demo` to find two notebooks
+that demo how the `cp_line_simple` neural network.
