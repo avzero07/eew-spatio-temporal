@@ -1,4 +1,4 @@
-# `est_lib` An API for Acquiring and Interacting with Seismic Data
+# `est_lib`: An API for Seismic Data Acquisition and Interaction
 
 ## Setup
 
